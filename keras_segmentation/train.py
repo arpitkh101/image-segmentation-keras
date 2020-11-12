@@ -4,6 +4,7 @@ from .data_utils.data_loader import image_segmentation_generator, \
 import glob
 import six
 from keras.callbacks import Callback
+from keras.callbacks import ModelCheckpoint, EarlyStopping, TensorBoard
 
 
 def find_latest_checkpoint(checkpoints_path, fail_safe=True):
@@ -73,6 +74,7 @@ def train(model,
           augmentation_name="aug_all"):
 
     from .models.all_models import model_from_name
+    tensorboard = TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=False, write_images=False)
     # check if user gives model name instead of the model object
     if isinstance(model, six.string_types):
         # create the model from the name
@@ -150,7 +152,7 @@ def train(model,
             n_classes, input_height, input_width, output_height, output_width)
 
     callbacks = [
-        CheckpointsCallback(checkpoints_path)
+        CheckpointsCallback(checkpoints_path), tensorboard
     ]
 
     if not validate:
